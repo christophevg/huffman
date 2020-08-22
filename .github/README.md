@@ -151,7 +151,7 @@ Going back to the dictionary mapping bitstrings to characters, extending the bit
 
 So in stead of looking in this table:
 
-```json
+```python
 {
   "000": "w",
   "001": " ",
@@ -166,7 +166,7 @@ So in stead of looking in this table:
 
 I'm now looking in this table:
 
-```json
+```python
 {
   "0000": ("w", 3), "0001": ("w", 3),
   "0010": (" ", 3), "0011": (" ", 3),
