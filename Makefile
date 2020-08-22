@@ -15,3 +15,10 @@ upgrade: requirements
 
 test: requirements
 	tox
+
+large:
+	wget http://corpus.canterbury.ac.nz/resources/large.zip
+	unzip large.zip -d $@
+
+mrproper:
+	@rm -rf large large.zip

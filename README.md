@@ -75,27 +75,28 @@ hello world from cli
 Download a large file, e.g. from [https://corpus.canterbury.ac.nz/descriptions/](https://corpus.canterbury.ac.nz/descriptions/) and provide it to the script...
 
 ```bash
-$ wget http://corpus.canterbury.ac.nz/resources/large.zip
---2020-08-19 10:36:08--  http://corpus.canterbury.ac.nz/resources/large.zip
+$ make large
+wget http://corpus.canterbury.ac.nz/resources/large.zip
+--2020-08-22 10:37:09--  http://corpus.canterbury.ac.nz/resources/large.zip
 Resolving corpus.canterbury.ac.nz (corpus.canterbury.ac.nz)... 132.181.17.8
 Connecting to corpus.canterbury.ac.nz (corpus.canterbury.ac.nz)|132.181.17.8|:80... connected.
 HTTP request sent, awaiting response... 302 Moved Temporarily
 Location: https://corpus.canterbury.ac.nz/resources/large.zip [following]
---2020-08-19 10:36:08--  https://corpus.canterbury.ac.nz/resources/large.zip
+--2020-08-22 10:37:09--  https://corpus.canterbury.ac.nz/resources/large.zip
 Connecting to corpus.canterbury.ac.nz (corpus.canterbury.ac.nz)|132.181.17.8|:443... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 3256280 (3,1M) [application/zip]
 Saving to: ‘large.zip’
 
-large.zip            100%[===================>]   3,10M   367KB/s    in 10s     
+large.zip            100%[===================>]   3,10M   366KB/s    in 8,8s    
 
-2020-08-19 10:36:20 (303 KB/s) - ‘large.zip’ saved [3256280/3256280]
+2020-08-22 10:37:20 (361 KB/s) - ‘large.zip’ saved [3256280/3256280]
 
-$ unzip large.zip -d large
+unzip large.zip -d large
 Archive:  large.zip
-  inflating: bible.txt               
-  inflating: E.coli                  
-  inflating: world192.txt            
+  inflating: large/bible.txt         
+  inflating: large/E.coli            
+  inflating: large/world192.txt      
 
 $ python huffman.py large/bible.txt
 32379136 bits
