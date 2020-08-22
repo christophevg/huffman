@@ -13,7 +13,7 @@ requirements: .python-version requirements.txt
 upgrade: requirements
 	@pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-test: requirements
+test: large requirements
 	tox
 
 large:

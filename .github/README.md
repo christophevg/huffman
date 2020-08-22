@@ -5,7 +5,7 @@
 Running the script as is, it performs all steps in the Huffman coding process on a predefined "hello world" string...
 
 ```bash
-$ python huffman.py
+$ python -m huffman.coding
 88 hello world
 [('h', 1), ('e', 1), ('l', 3), ('o', 2), (' ', 1), ('w', 1), ('r', 1), ('d', 1)]
 ((((((('r', 1), ('d', 1)), 2), (((' ', 1), ('w', 1)), 2)), 4), ((('l', 3), ((((('h', 1), ('e', 1)), 2), ('o', 2)), 4)), 7)), 11)
@@ -36,7 +36,7 @@ hello world
 Command line arguments are considered a string...
 
 ```bash
-$ python huffman.py hello world from cli
+$ python -m huffman.coding hello world from cli
 160 hello world from cli
 [('h', 1), ('e', 1), ('l', 4), ('o', 3), (' ', 3), ('w', 1), ('r', 2), ('d', 1), ('f', 1), ('m', 1), ('c', 1), ('i', 1)]
 ((((((((('c', 1), ('i', 1)), 2), ((('f', 1), ('m', 1)), 2)), 4), ('l', 4)), 8), ((((('r', 2), ('o', 3)), 5), (((' ', 3), ((((('w', 1), ('d', 1)), 2), ((('h', 1), ('e', 1)), 2)), 4)), 7)), 12)), 20)
@@ -98,10 +98,52 @@ Archive:  large.zip
   inflating: large/E.coli            
   inflating: large/world192.txt      
 
-$ python huffman.py large/bible.txt
+$ python -m huffman.coding large/bible.txt
 32379136 bits
 17747595 bits 0.5481182388560337 %
 ```
+
+## Decoding Performance
+
+My initial implementation for decoding used a dictionary with bitstrings as keys and the corresponding characters as values. It was a similar approach to the encoding logic. Due to not actually decoding the encoded bible, I didn't notice that this took ... like forever ;-)
+
+I changed the implementation to one that takes the encoding tree and traverse it, based on the bits in the encoded stream, adding the character when arriving at a leaf. This proved to be much faster, but still rather slow. Nevertheless, it introduced me to pytext-benchmark:
+
+```bash
+$ make test
+tox
+GLOB sdist-make: /Users/xtof/Workspace/huffman/setup.py
+py37 inst-nodeps: /Users/xtof/Workspace/huffman/.tox/.tmp/package/1/huffman-0.0.2.zip
+py37 installed: attrs==20.1.0,certifi==2020.6.20,chardet==3.0.4,coverage==5.2.1,coveralls==2.1.2,docopt==0.6.2,huffman @ file:///Users/xtof/Workspace/huffman/.tox/.tmp/package/1/huffman-0.0.2.zip,idna==2.10,importlib-metadata==1.7.0,iniconfig==1.0.1,more-itertools==8.4.0,packaging==20.4,pluggy==0.13.1,py==1.9.0,py-cpuinfo==7.0.0,pyparsing==2.4.7,pytest==6.0.1,pytest-benchmark==3.2.3,requests==2.24.0,six==1.15.0,toml==0.10.1,urllib3==1.25.10,zipp==3.1.0
+py37 run-test-pre: PYTHONHASHSEED='1916796342'
+py37 run-test: commands[0] | coverage run -m '--omit=*/.tox/*,*/distutils/*,*/tests/*' pytest
+=================================== test session starts ===================================
+platform darwin -- Python 3.7.7, pytest-6.0.1, py-1.9.0, pluggy-0.13.1
+cachedir: .tox/py37/.pytest_cache
+benchmark: 3.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: /Users/xtof/Workspace/huffman, configfile: tox.ini, testpaths: tests
+plugins: benchmark-3.2.3
+collected 1 item                                                                          
+
+tests/test_coding.py .                                                              [100%]
+
+
+------------------------------------------- benchmark: 1 tests ------------------------------------------
+Name (time in s)        Min     Max    Mean  StdDev  Median     IQR  Outliers     OPS  Rounds  Iterations
+---------------------------------------------------------------------------------------------------------
+test_roundtrip       4.6859  5.0134  4.8253  0.1543  4.7472  0.2770       1;0  0.2072       5           1
+---------------------------------------------------------------------------------------------------------
+
+Legend:
+  Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
+  OPS: Operations Per Second, computed as 1 / Mean
+=================================== 1 passed in 39.77s ====================================
+_________________________________________ summary _________________________________________
+  py37: commands succeeded
+  congratulations :)
+```
+
+Now this is going to prove to be addictive, giving me a very small piece of code to optimize to the moon and back ;-)
 
 ## TODO
 - implement it with "real bits" ;-) 

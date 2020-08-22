@@ -57,21 +57,17 @@ def encode(text, encoding):
   '''
   return "".join( [ encoding[char] for char in text ] )
 
-def decode(code, decoding):
+def decode(code, tree):
   '''
-  decodes characters according to a decoding dictionary, consuming bits in the
-  code until a valid decoding key is found
+  decodes characters, traversing the encoding tree up to a leave
   '''
   text = ""
-  b=""
-  while len(code) > 0:
-    b += code[0]
-    code = code[1:]
-    try:
-      text += decoding[b]
-      b = ""
-    except KeyError:
-      pass
+  p = tree
+  for b in code:
+    p = p[int(b)]
+    if len(p) == 1:
+      text += p
+      p = tree
   return text
 
 def pack(tree):
@@ -114,7 +110,7 @@ if __name__ == "__main__":
   if verbose:
     print(len(text) * 8, text)
   else:
-    print(len(text) * 8, "bits")    
+    print(len(text) * 8, "bits")
   # 88 hello world
 
   frequencies = count(text)
@@ -153,7 +149,7 @@ if __name__ == "__main__":
   if verbose:
     print(len(c), len(c)/(len(text)*8), c)
   else:
-    print(len(c), "bits", len(c)/(len(text)*8), "%")    
+    print(len(c), "bits", len(c)/(len(text)*8), "%")
   # 32 0.36363636363636365 11001101101011101001111100010001
 
   packed = pack(tree)
@@ -164,9 +160,6 @@ if __name__ == "__main__":
   if verbose: print(unpacked)
   # ((('r', 'd'), (' ', 'w')), ('l', (('h', 'e'), 'o')))
 
-  decoding = { v:k for k, v in make_encoding(unpacked).items()}
-  if verbose: print(decoding)
-  # {'000': 'r', '001': 'd', '010': ' ', '011': 'w', '10': 'l', '1100': 'h', '1101': 'e', '111': 'o'}
-
-  if verbose: print(decode(c, decoding))
+  decoded = decode(c, unpacked)
+  if verbose: print(decoded)
   # hello world

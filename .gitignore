@@ -2,3 +2,6 @@ large
 large.zip
 .python-version
 __pycache__
+.coverage
+.tox
+*.egg-info
