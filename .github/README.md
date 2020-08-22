@@ -145,6 +145,45 @@ _________________________________________ summary ______________________________
 
 Now this is going to prove to be addictive, giving me a very small piece of code to optimize to the moon and back ;-)
 
+### Fixed Key Length Lookup Table
+
+Going back to the dictionary mapping bitstrings to characters, extending the bitstrings to a fixed key length (of the longest key), adding duplicates for all missing bits after the key, proved to be a (though memory consuming) much faster way, slashing the decoding time roughly by two ;-)
+
+So in stead of looking in this table:
+
+```json
+{
+  '000': 'w',
+  '001': ' ',
+  '010': 'd',
+  '011': 'h',
+  '10': 'l',
+  '1100': 'e',
+  '1101': 'r',
+  '111': 'o'
+}
+```
+
+I'm now looking in this table:
+
+```json
+{
+  '0000': ('w', 3), '0001': ('w', 3),
+  '0010': (' ', 3), '0011': (' ', 3),
+  '0100': ('d', 3), '0101': ('d', 3),
+  '0110': ('h', 3), '0111': ('h', 3),
+  '1000': ('l', 2), '1001': ('l', 2), '1010': ('l', 2), '1011': ('l', 2),
+  '1100': ('e', 4),
+  '1101': ('r', 4),
+  '1110': ('o', 3), '1111': ('o', 3)}
+```
+
+It allows us to consume a fixed amount of bits from the code, ensures that the lookup table will always return a match, including the characters and the actual amount of bits that have to be consumed from the code.
+
+![Traversal vs Fixed Length Lookup Table](../media/traversal_vs_fixed_lookup.png)
+
+Building the lookup table takes little time, in comparison with the gain in decoding time.
+
 ## TODO
 - implement it with "real bits" ;-) 
 

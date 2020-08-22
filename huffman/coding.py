@@ -57,7 +57,7 @@ def encode(text, encoding):
   '''
   return "".join( [ encoding[char] for char in text ] )
 
-def decode(code, tree):
+def decode_using_traversal(code, tree):
   '''
   decodes characters, traversing the encoding tree up to a leave
   '''
@@ -69,6 +69,43 @@ def decode(code, tree):
       chars.append(node)
       node = tree
   return "".join(chars)
+
+def make_fixed_length_lookup_table(tree):
+  # build lookup table
+  encoding = make_encoding(tree)
+  decoding = { v:k for k, v in encoding.items()}
+
+  # build lookup table with fixed length strings
+  key_length = len(max(decoding.keys(), key=len))
+  lookup = {}
+  for bs, c in decoding.items():
+    if len(bs) < key_length:
+      pad = key_length - len(bs)
+      fmt = "{}{:0" + str(pad) + "b}"
+      for i in range(2**pad):
+        lookup[fmt.format(bs, i)] = ( c, len(bs) )
+    else:
+      lookup[bs] = ( c, key_length )
+  return lookup, key_length
+
+def decode_using_fixed_keylength_lookup(code, tree):
+  '''
+  decodes characters, using an extended lookup table with fixed length keys
+  '''
+  lookup, key_length = make_fixed_length_lookup_table(tree)
+  
+  # decode inspecting (max_)key_length, consuming returned actual length
+  p = 0
+  chars = []
+  end = len(code)
+
+  while p < end:
+    (c, l) = lookup[code[p:p+key_length].ljust(key_length, "0")]
+    chars.append(c)
+    p += l
+  return "".join(chars)
+
+decode = decode_using_fixed_keylength_lookup
 
 def pack(tree):
   '''
