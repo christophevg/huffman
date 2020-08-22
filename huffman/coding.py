@@ -61,14 +61,14 @@ def decode(code, tree):
   '''
   decodes characters, traversing the encoding tree up to a leave
   '''
-  text = ""
-  p = tree
-  for b in code:
-    p = p[int(b)]
-    if len(p) == 1:
-      text += p
-      p = tree
-  return text
+  chars = []
+  node = tree
+  for direction in code:
+    node = node[int(direction)]
+    if len(node) == 1:
+      chars.append(node)
+      node = tree
+  return "".join(chars)
 
 def pack(tree):
   '''
